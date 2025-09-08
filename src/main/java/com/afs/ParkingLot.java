@@ -25,6 +25,14 @@ public class ParkingLot {
         this.capacity = capacity;
     }
 
+    public Map<Ticket, Car> getTicketCars() {
+        return ticketCars;
+    }
+
+    public void setTicketCars(Map<Ticket, Car> ticketCars) {
+        this.ticketCars = ticketCars;
+    }
+
     public Car fetchCar(Ticket ticket) {
         if (!ticketCars.containsKey(ticket)) {
             System.out.println("Unrecognized parking ticket.");

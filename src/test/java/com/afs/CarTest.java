@@ -268,4 +268,159 @@ public class CarTest {
     }
 
 
+    // Given a standard parking boy, who manage two parking lots, both with available position, and a car, When park the car, Then the car will be parked to the first parking lot
+    @Test
+    public void should_return_ticket_from_first_parking_lots_when_park_given_2_parking_lots_and_a_standard_parking_boy_and_a_car() {
+        // given
+        Car car = new Car("Car number 1");
+        ParkingLot parkingLot = new ParkingLot();
+        ParkingLot parkingLot2 = new ParkingLot();
+        ParkingBoy parkingBoy = new ParkingBoy(parkingLot);
+        parkingBoy.addParkingLot(parkingLot2);
+
+        // when
+        Ticket ticket = parkingBoy.performPark(car);
+
+        // then
+        assertEquals(1, parkingLot.getTicketCars().size());
+        assertEquals(2, parkingBoy.getParkingLots().size());
+        assertNotNull(ticket);
+    }
+
+    // Given a standard parking boy, who manage two parking lots, first is full and second with available position, and a car, When park the car, Then the car will be parked to the second parking lot
+    @Test
+    public void should_return_ticket_from_second_parking_lots_when_park_given_2_parking_lots_first_is_full_and_a_standard_parking_boy_and_a_car() {
+        // given
+        Car car = new Car("Car number 1");
+        Car car2 = new Car("Car number 2");
+        ParkingLot parkingLot = new ParkingLot(1);
+        ParkingLot parkingLot2 = new ParkingLot();
+        ParkingBoy parkingBoy = new ParkingBoy(parkingLot);
+        parkingBoy.addParkingLot(parkingLot2);
+        Ticket ticket = parkingBoy.performPark(car);
+
+        // when
+        Ticket ticket2 = parkingBoy.performPark(car2);
+
+        // then
+        assertEquals(1, parkingLot.getTicketCars().size());
+        assertEquals(1, parkingLot2.getTicketCars().size());
+        assertEquals(2, parkingBoy.getParkingLots().size());
+        assertNotNull(ticket);
+        assertNotNull(ticket2);
+    }
+
+    // Given a standard parking boy, who manage two parking lots, both with a parked car, and two parking ticket, When fetch the car twice, Then return the right car with each ticket
+    @Test
+    public void should_return_cars_when_fetch_car_given_2_parking_lots_and_a_standard_parking_boy_and_tickets() {
+        // given
+        Car car = new Car("Car number 1");
+        Car car2 = new Car("Car number 2");
+        Car car3 = new Car("Car number 3");
+        Car car4 = new Car("Car number 4");
+        ParkingLot parkingLot = new ParkingLot(2);
+        ParkingLot parkingLot2 = new ParkingLot(2);
+        ParkingBoy parkingBoy = new ParkingBoy(parkingLot);
+        parkingBoy.addParkingLot(parkingLot2);
+        Ticket ticket = parkingBoy.performPark(car);
+        Ticket ticket2 = parkingBoy.performPark(car2);
+        Ticket ticket3 = parkingBoy.performPark(car3);
+        Ticket ticket4 = parkingBoy.performPark(car4);
+
+        // when
+        Car parkedCar = parkingBoy.performFetchCar(ticket);
+        Car parkedCar2 = parkingBoy.performFetchCar(ticket2);
+        Car parkedCar3 = parkingBoy.performFetchCar(ticket3);
+        Car parkedCar4 = parkingBoy.performFetchCar(ticket4);
+
+        // then
+        assertEquals(0, parkingLot.getTicketCars().size());
+        assertEquals(0, parkingLot2.getTicketCars().size());
+        assertEquals(2, parkingBoy.getParkingLots().size());
+        assertEquals(car, parkedCar);
+        assertEquals(car2, parkedCar2);
+        assertEquals(car3, parkedCar3);
+        assertEquals(car4, parkedCar4);
+    }
+
+    // Given a standard parking boy, who manage two parking lots, and an unrecognized ticket, When fetch the car, Then return nothing with error message "Unrecognized parking ticket.”
+    @Test
+    public void should_return_null_with_message_when_fetch_car_given_2_parking_lots_and_a_standard_parking_boy_and_unrecognized_ticket() {
+        // given
+        Car car = new Car("Car number 1");
+        ParkingLot parkingLot = new ParkingLot();
+        ParkingLot parkingLot2 = new ParkingLot();
+        ParkingBoy parkingBoy = new ParkingBoy(parkingLot);
+        parkingBoy.addParkingLot(parkingLot2);
+        Ticket ticket = parkingBoy.performPark(car);
+        Ticket unrecognizedTicket = new Ticket(ticket.position() + 1, parkingLot);
+
+        // when
+        Car fetchedCar = parkingBoy.performFetchCar(unrecognizedTicket);
+
+        // then
+        assertEquals(1, parkingLot.getTicketCars().size());
+        assertEquals(2, parkingBoy.getParkingLots().size());
+        assertNotNull(ticket);
+        assertNull(fetchedCar);
+        assertTrue(outputStream.toString().contains("Unrecognized parking ticket."));
+    }
+
+    // Given a standard parking boy, who manage two parking lots, and a used ticket, When fetch the car, Then return nothing with error message "Unrecognized parking ticket."
+    @Test
+    public void should_return_null_with_message_when_fetch_car_given_2_parking_lots_and_a_standard_parking_boy_and_used_ticket() {
+        // given
+        Car car = new Car("Car number 1");
+        ParkingLot parkingLot = new ParkingLot();
+        ParkingLot parkingLot2 = new ParkingLot();
+        ParkingBoy parkingBoy = new ParkingBoy(parkingLot);
+        parkingBoy.addParkingLot(parkingLot2);
+        Ticket ticket = parkingBoy.performPark(car);
+        Car fetchedCar = parkingBoy.performFetchCar(ticket);
+
+        // when
+        Car refetchedCar = parkingBoy.performFetchCar(ticket);
+
+        // then
+        assertEquals(0, parkingLot.getTicketCars().size());
+        assertEquals(2, parkingBoy.getParkingLots().size());
+        assertNotNull(ticket);
+        assertNotNull(fetchedCar);
+        assertNull(refetchedCar);
+        assertTrue(outputStream.toString().contains("Unrecognized parking ticket."));
+    }
+
+    // Given a standard parking boy, who manage two parking lots, both without any position, and a car, When park the car, Then return nothing with error message "No available position."
+    @Test
+    public void should_return_null_with_message_when_park_given_2_parking_lots_are_full_and_a_standard_parking_boy_and_a_car() {
+        // given
+        Car car = new Car("Car number 1");
+        Car car2 = new Car("Car number 2");
+        Car car3 = new Car("Car number 3");
+        Car car4 = new Car("Car number 4");
+        Car car5 = new Car("Car number 5");
+        ParkingLot parkingLot = new ParkingLot(2);
+        ParkingLot parkingLot2 = new ParkingLot(2);
+        ParkingBoy parkingBoy = new ParkingBoy(parkingLot);
+        parkingBoy.addParkingLot(parkingLot2);
+        Ticket ticket = parkingBoy.performPark(car);
+        Ticket ticket2 = parkingBoy.performPark(car2);
+        Ticket ticket3 = parkingBoy.performPark(car3);
+        Ticket ticket4 = parkingBoy.performPark(car4);
+
+        // when
+        Ticket ticket5 = parkingBoy.performPark(car5);
+
+        // then
+        assertEquals(2, parkingLot.getTicketCars().size());
+        assertEquals(2, parkingLot2.getTicketCars().size());
+        assertEquals(2, parkingBoy.getParkingLots().size());
+        assertNotNull(ticket);
+        assertNotNull(ticket2);
+        assertNotNull(ticket3);
+        assertNotNull(ticket4);
+        assertNull(ticket5);
+        assertTrue(outputStream.toString().contains("No available position."));
+    }
+
 }
