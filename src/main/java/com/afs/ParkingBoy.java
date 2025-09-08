@@ -33,7 +33,6 @@ public class ParkingBoy {
             }
         }
         return null;
-//        return parkingLot.park(car);
     }
 
     public Car performFetchCar(Ticket ticket) {
@@ -44,7 +43,6 @@ public class ParkingBoy {
             }
         }
         return null;
-//        return parkingLot.fetchCar(ticket);
     }
 
 }
