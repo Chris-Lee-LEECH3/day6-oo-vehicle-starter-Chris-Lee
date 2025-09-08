@@ -1,4 +1,3 @@
 package com.afs;
 
-public class Car {
-}
+public record Car(String carNumber) { }
