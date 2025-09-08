@@ -26,11 +26,15 @@ public class ParkingLot {
     }
 
     public Car fetchCar(Ticket ticket) {
+        if (!ticketCars.containsKey(ticket)) {
+            System.out.println("Unrecognized parking ticket.");
+        }
+
         return ticketCars.remove(ticket);
     }
 
     public Ticket park(Car car) {
-        return IntStream.rangeClosed(1, capacity).boxed()
+        Ticket newTicket = IntStream.rangeClosed(1, capacity).boxed()
             .filter(position -> ticketCars.keySet().stream().noneMatch(ticket -> ticket.position().equals(position)))
             .findFirst()
             .map(position -> {
@@ -38,6 +42,12 @@ public class ParkingLot {
                     ticketCars.put(ticket, car);
                     return ticket;
                 }).orElse(null);
+
+        if (newTicket == null) {
+            System.out.println("No available position.");
+        }
+
+        return newTicket;
     }
 
 }
