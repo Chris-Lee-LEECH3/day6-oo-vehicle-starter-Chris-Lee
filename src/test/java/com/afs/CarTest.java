@@ -160,4 +160,112 @@ public class CarTest {
         assertTrue(outputStream.toString().contains("No available position."));
     }
 
+    // Given a parking lot, a standard parking boy, and a car, When park the car, Then return a parking ticket
+    @Test
+    public void should_return_ticket_when_park_given_a_parking_lot_and_a_standard_parking_boy_and_a_car() {
+        // given
+        Car car = new Car("Car number 1");
+        ParkingLot parkingLot = new ParkingLot();
+        ParkingBoy parkingBoy = new ParkingBoy(parkingLot);
+
+        // when
+        Ticket ticket = parkingBoy.performPark(car);
+
+        // then
+        assertNotNull(ticket);
+    }
+
+    // Given a parking lot with a parked car, a standard parking boy, and a parking ticket, When fetch the car, Then return the parked car.
+    @Test
+    public void should_return_car_when_fetch_car_given_a_parking_lot_with_a_packed_car_and_a_standard_parking_boy_and_parking_ticket() {
+        // given
+        Car car = new Car("Car number 1");
+        ParkingLot parkingLot = new ParkingLot();
+        ParkingBoy parkingBoy = new ParkingBoy(parkingLot);
+        Ticket ticket = parkingBoy.performPark(car);
+
+        // when
+        Car parkedCar = parkingBoy.performFetchCar(ticket);
+
+        // then
+        assertEquals(car, parkedCar);
+    }
+
+    // Given a parking lot with two parked cars, a standard parking boy, and two parking tickets, When fetch the car twice, Then return the right car with each ticket
+    @Test
+    public void should_return_2_cars_when_fetch_car_given_a_parking_lot_with_2_packed_cars_and_a_standard_parking_boy_and_2_packing_tickets() {
+        // given
+        Car car = new Car("Car number 1");
+        Car car2 = new Car("Car number 2");
+        ParkingLot parkingLot = new ParkingLot();
+        ParkingBoy parkingBoy = new ParkingBoy(parkingLot);
+        Ticket ticket = parkingBoy.performPark(car);
+        Ticket ticket2 = parkingBoy.performPark(car2);
+
+        // when
+        Car parkedCar = parkingBoy.performFetchCar(ticket);
+        Car parkedCar2 = parkingBoy.performFetchCar(ticket2);
+
+        // then
+        assertEquals(car, parkedCar);
+        assertEquals(car2, parkedCar2);
+    }
+
+    // Given a parking lot, a standard parking boy, and a wrong parking ticket, When fetch the car, Then return nothing with error message "Unrecognized parking ticket.”
+    @Test
+    public void should_return_null_and_prompt_error_message_when_fetch_car_given_a_parking_lot_and_a_standard_parking_boy_and_a_wrong_parking_ticket() {
+        // given
+        Car car = new Car("Car number 1");
+        ParkingLot parkingLot = new ParkingLot();
+        ParkingBoy parkingBoy = new ParkingBoy(parkingLot);
+        Ticket ticket = parkingBoy.performPark(car);
+        Ticket wrongTicket = new Ticket(ticket.position() + 1, parkingLot);
+
+        // when
+        Car parkedCar = parkingBoy.performFetchCar(wrongTicket);
+
+        // then
+        assertNull(parkedCar);
+        assertTrue(outputStream.toString().contains("Unrecognized parking ticket."));
+    }
+
+    // Given a parking lot, a standard parking boy, and a used parking ticket, When fetch the car, Then return nothing with error message "Unrecognized parking ticket."
+    @Test
+    public void should_return_null_and_prompt_error_message_when_fetch_car_given_a_parking_lot_and_a_standard_parking_boy_and_a_used_parking_ticket() {
+        // given
+        Car car = new Car("Car number 1");
+        ParkingLot parkingLot = new ParkingLot();
+        ParkingBoy parkingBoy = new ParkingBoy(parkingLot);
+        Ticket ticket = parkingBoy.performPark(car);
+        Car parkedCar = parkingBoy.performFetchCar(ticket);
+
+        // when
+        Car refetchedCar = parkingBoy.performFetchCar(ticket);
+
+        // then
+        assertNotNull(parkedCar);
+        assertNull(refetchedCar);
+        assertTrue(outputStream.toString().contains("Unrecognized parking ticket."));
+    }
+
+    // Given a parking lot without any position, a standard parking boy, and a car, When park the car, Then return nothing with error message "No available position."
+    @Test
+    public void should_return_null_and_prompt_error_message_when_park_given_a_parking_lot_no_any_position_and_a_standard_parking_boy_and_a_car() {
+        // given
+        Car car = new Car("Car number 1");
+        Car car2 = new Car("Car number 2");
+        ParkingLot parkingLot = new ParkingLot(1);
+        ParkingBoy parkingBoy = new ParkingBoy(parkingLot);
+        Ticket ticket = parkingBoy.performPark(car);
+
+        // when
+        Ticket ticket2 = parkingBoy.performPark(car2);
+
+        // then
+        assertNotNull(ticket);
+        assertNull(ticket2);
+        assertTrue(outputStream.toString().contains("No available position."));
+    }
+
+
 }
